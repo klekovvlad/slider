@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slider</title>
+</head>
+<body>
+
+    <style>
+        .container {
+            max-width: 500px;
+            margin: 0px auto;
+        }
+        .slider__wrapper {
+            overflow: hidden;
+            position: relative;
+        }
+        .slider {
+            display: flex;
+            align-items: center;
+            transition: 0.5s;
+            position: relative;
+            min-height: 300px;
+        }
+        .slider__item {
+            position: absolute;
+            min-width: 100%;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.5s;
+            z-index: 4;
+        }
+        .slider__item img {
+            max-width: 100%;
+        }
+        .slider__prev, .slider__next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: #000;
+            z-index: 5;
+        }
+        .slider__prev {
+            left: 0;
+        }
+        .slider__next {
+            right: 0;
+        }
+        .slide__active {
+            opacity: 1.0;
+            visibility: visible;
+        }
+    </style>
+    
+    <div class="container">
+        <div class="slider__wrapper">
+            <div class="slider__prev"></div>
+            <div class="slider">
+                <div class="slider__item">
+                    <img src="https://ia.wampi.ru/2020/11/13/004.jpg" alt="Изображение" class="img">
+                </div>
+                <div class="slider__item">
+                    <img src="https://ia.wampi.ru/2020/11/13/003.jpg" alt="Изображение" class="img">
+                </div>
+                <div class="slider__item">
+                    <img src="https://ia.wampi.ru/2020/11/13/004.jpg" alt="Изображение" class="img">
+                </div>
+                <div class="slider__item">
+                    <img src="https://ia.wampi.ru/2020/11/13/003.jpg" alt="Изображение" class="img">
+                </div>
+            </div>
+            <div class="slider__next"></div>
+        </div>
+    </div>
+
+    <script>
+        const slider = document.querySelector('.slider');
+        const nextButton = document.querySelector('.slider__next');
+        const prevButton = document.querySelector('.slider__prev');
+        const sliderItem = document.querySelectorAll('.slider__item');
+        let curentSlide = 0;
+        sliderItem[0].classList.add('slide__active');
+
+        function swipe() {
+            if (sliderItem.length === curentSlide + 1) {
+                sliderItem[curentSlide].classList.remove('slide__active');
+                sliderItem[0].classList.add('slide__active');
+                curentSlide = 0;
+                nextSlide = 1;
+            } else {
+                slideNext();
+            }
+        }
+        function prevSwipe() {
+            if (curentSlide != 0) {
+                slidePrev();
+            }
+        }
+        function slideNext() {
+            let nextSlide = curentSlide + 1;
+            sliderItem[curentSlide].classList.remove('slide__active');
+            sliderItem[nextSlide].classList.add('slide__active');
+            curentSlide++;
+            console.log(nextSlide);
+        }
+        function slidePrev() {
+            let nextSlide = curentSlide - 1;
+            sliderItem[curentSlide].classList.remove('slide__active');
+            sliderItem[nextSlide].classList.add('slide__active');
+            curentSlide--;
+        }
+        nextButton.addEventListener('click', () => {
+            swipe();
+        });
+        prevButton.addEventListener('click', () => {
+            prevSwipe();
+        });
+        setInterval(swipe, 5000);
+
+        function posOne(e) {
+            return x1 = e.changedTouches[0].clientX;
+        };
+
+        function posTwo(e) {
+            return x2 = e.changedTouches[0].clientX;
+        };
+
+        slider.addEventListener('touchstart', (e) => {
+            posOne(e);
+        });
+        slider.addEventListener('touchend', (e) => {
+            posTwo(e);
+            if (x1 > x2) {
+                swipe();
+            }else{
+                prevSwipe();
+            }
+        });
+
+        
+    </script>
+</body>
+</html>
