@@ -10,7 +10,7 @@
 
     <style>
         .container {
-            max-width: 500px;
+            max-width: 1000px;
             margin: 0px auto;
         }
         .slider__wrapper {
@@ -22,14 +22,14 @@
             align-items: center;
             transition: 0.5s;
             position: relative;
-            min-height: 300px;
+            min-height: 200px;
         }
         .slider__item {
             position: absolute;
             min-width: 100%;
             visibility: hidden;
             opacity: 0;
-            transition: 0.5s;
+            transition: 0.7s;
             z-index: 4;
         }
         .slider__item img {
@@ -37,22 +37,70 @@
         }
         .slider__prev, .slider__next {
             position: absolute;
-            top: 50%;
+            top: 100px;
             transform: translateY(-50%);
-            width: 50px;
-            height: 50px;
-            background: #000;
+            width: 52px;
+            height: 52px;
+            background-color: hsla(0,0%,100%,.8);
+            border: 2px solid #ef1412;
+            border-radius: 50%;
             z-index: 5;
+            cursor: pointer;
         }
         .slider__prev {
-            left: 0;
+            left: 10px;
         }
         .slider__next {
-            right: 0;
+            right: 10px;
+        }
+        .slider__prev::before {
+            content: '\276E';
+            left: 15px;
+        }
+        .slider__next::before {
+            content: '\276F';
+            right: 20px;
+        }
+        .slider__prev::before, .slider__next::before {
+            font-size: 26px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-55%); 
+            color:#ef1412;
         }
         .slide__active {
             opacity: 1.0;
             visibility: visible;
+        }
+        .slider__pagination {
+            margin-top: -20px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            position: relative;
+            z-index: 200;
+        }
+        .pagination {
+            list-style: none;
+            display: block;
+            height: 10px;
+            width: 10px;
+            border-radius: 50px;
+            border: 2px solid #fff;
+            background: #ef1412;
+            transition: 0.5s all linear;
+            margin: 0px 10px;
+        }
+        .pagination__active {
+            background: #ef1412;
+            width: 50px;
+            position: relative;
+        }
+
+        @media (max-width: 1000px) {
+            .container {
+                max-width: 100%;
+            }
         }
     </style>
     
@@ -61,19 +109,17 @@
             <div class="slider__prev"></div>
             <div class="slider">
                 <div class="slider__item">
-                    <img src="https://ia.wampi.ru/2020/11/13/004.jpg" alt="Изображение" class="img">
+                    <img src="https://www.okeydostavka.ru/wcsstore/OKMarketSAS/Carusel/2019/2022w44_banner_carusel_bestdays.jpg" alt="Изображение" class="img">
                 </div>
                 <div class="slider__item">
-                    <img src="https://ia.wampi.ru/2020/11/13/003.jpg" alt="Изображение" class="img">
+                    <img src="https://www.okeydostavka.ru/wcsstore/OKMarketSAS/Carusel/2019/2022w43_banner_carusel_jacobs.jpg" alt="Изображение" class="img">
                 </div>
                 <div class="slider__item">
-                    <img src="https://ia.wampi.ru/2020/11/13/004.jpg" alt="Изображение" class="img">
-                </div>
-                <div class="slider__item">
-                    <img src="https://ia.wampi.ru/2020/11/13/003.jpg" alt="Изображение" class="img">
+                    <img src="https://www.okeydostavka.ru/wcsstore/OKMarketSAS/Carusel/2019/2022w43_banner_carusel_cheese_sausage_msk.jpg" alt="Изображение" class="img">
                 </div>
             </div>
             <div class="slider__next"></div>
+            <ul class="slider__pagination"></ul>
         </div>
     </div>
 
@@ -84,6 +130,7 @@
         const sliderItem = document.querySelectorAll('.slider__item');
         let curentSlide = 0;
         sliderItem[0].classList.add('slide__active');
+        // setInterval(swipe, 5000);
 
         function swipe() {
             if (sliderItem.length === curentSlide + 1) {
@@ -91,13 +138,16 @@
                 sliderItem[0].classList.add('slide__active');
                 curentSlide = 0;
                 nextSlide = 1;
+                paginationActive(curentSlide);
             } else {
                 slideNext();
+                paginationActive(curentSlide);
             }
         }
         function prevSwipe() {
             if (curentSlide != 0) {
                 slidePrev();
+                paginationActive(curentSlide);
             }
         }
         function slideNext() {
@@ -105,13 +155,13 @@
             sliderItem[curentSlide].classList.remove('slide__active');
             sliderItem[nextSlide].classList.add('slide__active');
             curentSlide++;
-            console.log(nextSlide);
         }
         function slidePrev() {
             let nextSlide = curentSlide - 1;
             sliderItem[curentSlide].classList.remove('slide__active');
             sliderItem[nextSlide].classList.add('slide__active');
             curentSlide--;
+            paginationActive(curentSlide);
         }
         nextButton.addEventListener('click', () => {
             swipe();
@@ -119,8 +169,6 @@
         prevButton.addEventListener('click', () => {
             prevSwipe();
         });
-        setInterval(swipe, 5000);
-
         function posOne(e) {
             return x1 = e.changedTouches[0].clientX;
         };
@@ -141,7 +189,34 @@
             }
         });
 
-        
+        const pagination = document.querySelector('.slider__pagination');
+
+        for(i = 0; i < sliderItem.length; i++) {
+            const pagItem = document.createElement('li');
+            pagItem.className = 'pagination';
+            pagination.appendChild(pagItem);
+        }
+
+        const pagItem = document.querySelectorAll('.pagination');
+        function paginationActive(curentSlide) {
+            pagItem.forEach(pagElem => {
+                pagElem.classList.remove('pagination__active');
+            });
+            pagItem[curentSlide].classList.add('pagination__active');
+        }
+        paginationActive(curentSlide);
+
+        // pagItem.forEach(function(pagLink, index) {
+        //     pagLink.addEventListener('click', () => {
+        //         sliderItem.forEach(item => {
+        //             item.classList.remove('slide__active');
+        //         })
+        //         sliderItem[index].classList.add('slide__active');
+        //         let nextSlide= index + 1;
+        //         paginationActive(index);
+        //     })
+        // })
+
     </script>
 </body>
 </html>
